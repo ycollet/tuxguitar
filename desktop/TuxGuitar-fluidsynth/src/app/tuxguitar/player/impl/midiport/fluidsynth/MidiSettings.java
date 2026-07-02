@@ -117,8 +117,8 @@ public class MidiSettings {
 			this.applyIntegerProperty(AUDIO_PERIOD_COUNT );
 			this.applyDoubleProperty(SYNTH_GAIN );
 			this.applyDoubleProperty(SYNTH_SAMPLE_RATE );
-			this.applyStringProperty(SYNTH_REVERB_ACTIVE );
-			this.applyStringProperty(SYNTH_CHORUS_ACTIVE );
+			this.applyBooleanProperty(SYNTH_REVERB_ACTIVE );
+			this.applyBooleanProperty(SYNTH_CHORUS_ACTIVE );
 			this.applyIntegerProperty(SYNTH_POLYPHONY );
 			if( this.restartSynth ){
 				this.getSynth().reconnect();
@@ -149,6 +149,15 @@ public class MidiSettings {
 
 	private void applyIntegerProperty( String property ){
 		int newValue = this.getIntegerValue( property );
+		int oldValue = this.getSynth().getIntegerProperty( property );
+		if( newValue != oldValue ){
+			this.getSynth().setIntegerProperty( property, newValue );
+			this.restartSynth = (this.restartSynth || !this.getSynth().isRealtimeProperty( property ));
+		}
+	}
+
+	private void applyBooleanProperty( String property ){
+		int newValue = this.getBooleanValue( property ) ? 1 : 0;
 		int oldValue = this.getSynth().getIntegerProperty( property );
 		if( newValue != oldValue ){
 			this.getSynth().setIntegerProperty( property, newValue );
